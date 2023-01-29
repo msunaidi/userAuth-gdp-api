@@ -9,6 +9,7 @@ import crypto from "crypto";
 import { Buffer } from "buffer";
 import users from "../databases/users";
 import User from "../models/user.model";
+import Token from "../models/token.model";
 import tokens from "../databases/tokens";
 
 class AuthService {
@@ -70,3 +71,7 @@ class AuthService {
     return tokenSign;
   }
 }
+
+const authService = new AuthService(tokens);
+
+export default authService;
