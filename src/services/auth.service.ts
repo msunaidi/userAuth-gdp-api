@@ -15,10 +15,6 @@ import tokens from "../databases/tokens";
 class AuthService {
   tokenList: Token[];
 
-  private privateKey = crypto.generateKeySync("aes", {
-    length: 256,
-  });
-
   constructor(database: Token[]) {
     this.tokenList = database;
   }
@@ -63,8 +59,12 @@ class AuthService {
   }
 
   private generateToken(uid: string): string {
+    const { privateKey } = crypto.generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+    });
+
     const data = Buffer.from(uid);
-    const sign = crypto.sign("SHA256", data, this.privateKey);
+    const sign = crypto.sign("SHA256", data, privateKey);
 
     const tokenSign = sign.toString("base64");
 

@@ -2,6 +2,7 @@ import express from "express";
 import loggerMiddleware from "./middlewares/logger.middleware";
 import errorHandlerMiddleware from "./middlewares/error-handler.middleware";
 import userRouter from "./routes/users/users.router";
+import authRouter from "./routes/auth/auth.router";
 
 const app: express.Express = express();
 
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 app.use(loggerMiddleware);
 
 app.use("/users", userRouter);
+app.use("/auth", authRouter);
 
 app.use(errorHandlerMiddleware);
 
