@@ -1,3 +1,3 @@
-const tokens: string[] = [];
+const tokens: Token[] = [];
 
 export default tokens;
