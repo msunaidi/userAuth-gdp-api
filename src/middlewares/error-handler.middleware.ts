@@ -7,8 +7,8 @@ const errorHandlerMiddleware = (
   res: Response,
   _next: NextFunction
 ) => {
-  let statusCode = 500;
-  let message = "Something went wrong!";
+  let statusCode: number = 500;
+  let message: string = "Something went wrong!";
 
   if (error instanceof HttpError) {
     statusCode = error.statusCode;

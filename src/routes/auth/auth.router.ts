@@ -1,4 +1,4 @@
-// TODO: Create a route that will do the following:
+// DONE: Create a route that will do the following:
 // 1. Handle a POST request to /auth/login that will take in an email and password as the request body
 //      and will return a JSON object with a token property. This token SHOULD be stored in the database.
 // 2. Handle a POST request to /auth/profile that will take in a token in the request header with key Authentication.
@@ -14,8 +14,15 @@ const authRouter: Router = Router();
 authRouter.post("/login", (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Bad Request",
+      });
+    }
+
     const token = authService.verifyUser(email, password);
-    res.json(token);
+    res.json({ token: token });
   } catch (error) {
     throw new HttpError(500, (error as Error).message);
   }
@@ -27,8 +34,15 @@ authRouter.post(
     try {
       const authzHeader = req.headers.authorization;
       const token = authzHeader!.split(" ")[1];
+
+      if (!token) {
+        return res.status(400).json({
+          message: "Bad Request",
+        });
+      }
+
       const user = authService.getUser(token);
-      res.json(user);
+      res.json({ user });
     } catch (error) {
       throw new HttpError(500, (error as Error).message);
     }

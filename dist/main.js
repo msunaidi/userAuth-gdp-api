@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const logger_middleware_1 = __importDefault(require("./middlewares/logger.middleware"));
 const error_handler_middleware_1 = __importDefault(require("./middlewares/error-handler.middleware"));
 const users_router_1 = __importDefault(require("./routes/users/users.router"));
+const auth_router_1 = __importDefault(require("./routes/auth/auth.router"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
 app.use(express_1.default.urlencoded({ extended: false }));
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
 });
 app.use(logger_middleware_1.default);
 app.use("/users", users_router_1.default);
+app.use("/auth", auth_router_1.default);
 app.use(error_handler_middleware_1.default);
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);

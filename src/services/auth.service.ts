@@ -25,22 +25,23 @@ class AuthService {
       throw new Error("Email not found");
     }
     if (user.password !== password) {
-      throw new Error("Password don't match");
+      throw new Error("Password is incorrect");
     }
 
     this.removeExistingToken(user.id);
 
     const tokenSign = this.generateToken(user.id);
-    const token: Token = { token: tokenSign, userId: user.id };
-    tokens.push(token);
 
-    return token.token;
+    const tokenObj: Token = { token: tokenSign, userId: user.id };
+    this.tokenList.push(tokenObj);
+
+    return tokenObj.token;
   }
 
   getUser(token: string): User {
-    const findToken = this.tokenList.find((t) => t.token == token);
+    const findToken = this.tokenList.find((t) => t.token === token);
     if (!findToken) {
-      throw new Error("Token not found");
+      throw new Error("Invalid token");
     }
     const user = users.find((u) => u.id === findToken.userId);
     if (!user) {
@@ -54,7 +55,7 @@ class AuthService {
       (t) => t.userId === uid
     );
     if (tokenIndex !== -1) {
-      this.tokenList = this.tokenList.filter((t, i) => i != tokenIndex);
+      this.tokenList.splice(tokenIndex, 1);
     }
   }
 
