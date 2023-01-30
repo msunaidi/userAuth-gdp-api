@@ -35,16 +35,23 @@ class AuthService {
     return tokenObj.token;
   }
 
-  getUser(token: string): User {
-    const findToken = this.tokenList.find((t) => t.token === token);
-    if (!findToken) {
-      throw new Error("Invalid token");
-    }
-    const user = users.find((u) => u.id === findToken.userId);
+  getUser(token: Token): User {
+    const user = users.find((u) => u.id === token.userId);
+
     if (!user) {
       throw new Error("User not found");
     }
     return user;
+  }
+
+  getToken(token: string): Token {
+    const findToken = this.tokenList.find((t) => t.token === token);
+
+    if (!findToken) {
+      throw new Error("Invalid token");
+    }
+
+    return findToken;
   }
 
   private removeExistingToken(uid: string) {

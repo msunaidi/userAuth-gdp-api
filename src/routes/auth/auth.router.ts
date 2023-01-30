@@ -7,6 +7,7 @@
 
 import { Request, Response, Router } from "express";
 import HttpError from "../../models/http-error.model";
+import Token from "../../models/token.model";
 import authService from "../../services/auth.service";
 
 const authRouter: Router = Router();
@@ -24,7 +25,7 @@ authRouter.post("/login", (req: Request, res: Response) => {
     const token = authService.verifyUser(email, password);
     res.json({ token: token });
   } catch (error) {
-    throw new HttpError(500, (error as Error).message);
+    throw new HttpError(400, (error as Error).message);
   }
 });
 
@@ -39,10 +40,22 @@ authRouter.post("/profile", (req: Request, res: Response) => {
       });
     }
 
-    const user = authService.getUser(token);
-    res.json({ user });
+    let tokenObj: Token;
+
+    try {
+      tokenObj = authService.getToken(token);
+    } catch (error) {
+      throw new HttpError(401, (error as Error).message);
+    }
+
+    try {
+      const user = authService.getUser(tokenObj);
+      res.json({ user });
+    } catch (error) {
+      throw new HttpError(404, (error as Error).message);
+    }
   } catch (error) {
-    throw new HttpError(500, (error as Error).message);
+    throw new HttpError(401, "Failed to authorize");
   }
 });
 
