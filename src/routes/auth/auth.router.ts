@@ -30,32 +30,29 @@ authRouter.post("/login", (req: Request, res: Response) => {
 });
 
 authRouter.post("/profile", (req: Request, res: Response) => {
+  const authzHeader = req.headers.authorization;
+
+  if (!authzHeader) {
+    return res.status(401).json({
+      message: "Failed to authorize",
+    });
+  }
+
+  const token = authzHeader!.split(" ")[1];
+
+  let tokenObj: Token;
+
   try {
-    const authzHeader = req.headers.authorization;
-    const token = authzHeader!.split(" ")[1];
-
-    if (!token) {
-      return res.status(400).json({
-        message: "Bad Request",
-      });
-    }
-
-    let tokenObj: Token;
-
-    try {
-      tokenObj = authService.getToken(token);
-    } catch (error) {
-      throw new HttpError(401, (error as Error).message);
-    }
-
-    try {
-      const user = authService.getUser(tokenObj);
-      res.json({ user });
-    } catch (error) {
-      throw new HttpError(404, (error as Error).message);
-    }
+    tokenObj = authService.getToken(token);
   } catch (error) {
-    throw new HttpError(401, "Failed to authorize");
+    throw new HttpError(401, (error as Error).message);
+  }
+
+  try {
+    const user = authService.getUser(tokenObj);
+    res.json({ user });
+  } catch (error) {
+    throw new HttpError(404, (error as Error).message);
   }
 });
 
