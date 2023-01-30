@@ -21,17 +21,14 @@ class AuthService {
 
   verifyUser(email: string, password: string): string {
     const user = users.find((u) => u.email === email);
-    if (!user) {
-      throw new Error("Email not found");
-    }
-    if (user.password !== password) {
-      throw new Error("Password is incorrect");
+
+    if (!user || user.password !== password) {
+      throw new Error("Email or Password is incorrect");
     }
 
     this.removeExistingToken(user.id);
 
     const tokenSign = this.generateToken(user.id);
-
     const tokenObj: Token = { token: tokenSign, userId: user.id };
     this.tokenList.push(tokenObj);
 
