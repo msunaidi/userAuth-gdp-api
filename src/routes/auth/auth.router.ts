@@ -22,7 +22,7 @@ authRouter.post("/login", (req: Request, res: Response) => {
       });
     }
 
-    const token = authService.verifyUser(email, password);
+    const token = authService.authenticateUser(email, password);
     res.json({ token: token });
   } catch (error) {
     throw new HttpError(400, (error as Error).message);
@@ -43,7 +43,7 @@ authRouter.post("/profile", (req: Request, res: Response) => {
   let tokenObj: Token;
 
   try {
-    tokenObj = authService.getToken(token);
+    tokenObj = authService.findTokenOrFail(token);
   } catch (error) {
     throw new HttpError(401, (error as Error).message);
   }

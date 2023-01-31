@@ -48,7 +48,7 @@ userRouter.get("/:id", (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   try {
-    const user = usersService.findOneOrFail(id);
+    const user = usersService.findOneOrFail("id", id);
 
     res.json(user);
   } catch (error) {
@@ -66,7 +66,7 @@ userRouter.patch("/:id", (req: Request, res: Response, next: NextFunction) => {
   let user: User;
 
   try {
-    user = usersService.findOneOrFail(id);
+    user = usersService.findOneOrFail("id", id);
   } catch (error) {
     throw new HttpError(404, (error as Error).message);
   }
@@ -89,7 +89,7 @@ userRouter.delete("/:id", (req: Request, res: Response, next: NextFunction) => {
   let user: User;
 
   try {
-    user = usersService.findOneOrFail(id);
+    user = usersService.findOneOrFail("id", id);
   } catch (error) {
     throw new HttpError(404, (error as Error).message);
   }

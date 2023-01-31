@@ -42,8 +42,13 @@ class UsersService {
     return this.database;
   }
 
-  findOneOrFail(id: string): User {
-    const user = this.database.find((user) => user.id === id);
+  findOneOrFail(property: string, value: string): User {
+    let user: User | undefined;
+    if (property === "id") {
+      user = this.database.find((user) => user.id === value);
+    } else if (property === "email") {
+      user = this.database.find((user) => user.email === value);
+    }
 
     if (!user) {
       throw new Error("User not found");

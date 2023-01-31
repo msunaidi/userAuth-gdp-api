@@ -7,10 +7,10 @@
 
 import crypto from "crypto";
 import { Buffer } from "buffer";
-import users from "../databases/users";
 import User from "../models/user.model";
 import Token from "../models/token.model";
 import tokens from "../databases/tokens";
+import usersService from "./user.service";
 
 class AuthService {
   tokenList: Token[];
@@ -19,8 +19,8 @@ class AuthService {
     this.tokenList = database;
   }
 
-  verifyUser(email: string, password: string): string {
-    const user = users.find((u) => u.email === email);
+  authenticateUser(email: string, password: string): string {
+    const user = usersService.findOneOrFail("email", email);
 
     if (!user || user.password !== password) {
       throw new Error("Email or Password is incorrect");
@@ -36,7 +36,7 @@ class AuthService {
   }
 
   getUser(token: Token): User {
-    const user = users.find((u) => u.id === token.userId);
+    const user = usersService.findOneOrFail("id", token.userId);
 
     if (!user) {
       throw new Error("User not found");
@@ -44,7 +44,7 @@ class AuthService {
     return user;
   }
 
-  getToken(token: string): Token {
+  findTokenOrFail(token: string): Token {
     const findToken = this.tokenList.find((t) => t.token === token);
 
     if (!findToken) {
