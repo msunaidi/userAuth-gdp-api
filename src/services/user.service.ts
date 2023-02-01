@@ -42,13 +42,18 @@ class UsersService {
     return this.database;
   }
 
-  findOneOrFail(property: string, value: string): User {
-    let user: User | undefined;
-    if (property === "id") {
-      user = this.database.find((user) => user.id === value);
-    } else if (property === "email") {
-      user = this.database.find((user) => user.email === value);
+  findOneOrFail(id: string): User {
+    const user = this.database.find((user) => user.id === id);
+
+    if (!user) {
+      throw new Error("User not found");
     }
+
+    return user;
+  }
+
+  findOneByEmail(email: string): User {
+    const user = this.database.find((user) => user.email === email);
 
     if (!user) {
       throw new Error("User not found");

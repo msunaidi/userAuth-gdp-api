@@ -12,8 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const http_error_model_1 = __importDefault(require("../../models/http-error.model"));
 const auth_service_1 = __importDefault(require("../../services/auth.service"));
+const token_service_1 = require("../../services/token.service");
 const authRouter = (0, express_1.Router)();
-authRouter.post("/login", (req, res, next) => {
+authRouter.post("/login", (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -21,27 +22,34 @@ authRouter.post("/login", (req, res, next) => {
                 message: "Bad Request",
             });
         }
-        const token = auth_service_1.default.verifyUser(email, password);
+        const token = auth_service_1.default.authenticateUser(email, password);
         res.json({ token: token });
     }
     catch (error) {
-        throw new http_error_model_1.default(500, error.message);
+        throw new http_error_model_1.default(400, error.message);
     }
 });
-authRouter.post("/profile", (req, res, next) => {
+authRouter.post("/profile", (req, res) => {
+    const authzHeader = req.headers.authorization;
+    if (!authzHeader) {
+        return res.status(401).json({
+            message: "Failed to authorize",
+        });
+    }
+    const token = authzHeader.split(" ")[1];
+    let tokenObj;
     try {
-        const authzHeader = req.headers.authorization;
-        const token = authzHeader.split(" ")[1];
-        if (!token) {
-            return res.status(400).json({
-                message: "Bad Request",
-            });
-        }
-        const user = auth_service_1.default.getUser(token);
+        tokenObj = token_service_1.tokenService.findTokenOrFail(token);
+    }
+    catch (error) {
+        throw new http_error_model_1.default(401, error.message);
+    }
+    try {
+        const user = auth_service_1.default.getUserProfile(tokenObj);
         res.json({ user });
     }
     catch (error) {
-        throw new http_error_model_1.default(500, error.message);
+        throw new http_error_model_1.default(404, error.message);
     }
 });
 exports.default = authRouter;

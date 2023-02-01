@@ -36,6 +36,13 @@ class UsersService {
         }
         return user;
     }
+    findOneByEmail(email) {
+        const user = this.database.find((user) => user.email === email);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return user;
+    }
     delete(user) {
         this.database.splice(this.database.indexOf(user), 1);
     }
